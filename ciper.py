@@ -57,9 +57,6 @@ def autokey_decrypt(ciphertext, key):
         
     return plaintext
 
-# ==========================================
-# Example Execution
-# ==========================================
 if __name__ == "__main__":
     original_text = input("\nEnter the plain text: ")
     secret_key = input("Enter the Key: ")
@@ -70,7 +67,6 @@ if __name__ == "__main__":
     print(f"Key:           {prepare_string(secret_key)}")
     print("-" * 45)
     
-    # --- ENCRYPTION PHASE ---
     
     # 1. Generate a Hash of the plaintext
     text_hash = custom_hash(prepared_text)
@@ -83,9 +79,7 @@ if __name__ == "__main__":
     final_payload = encrypted_text + text_hash
     print(f"Encrypted (+ Hash Payload): {final_payload}")
     print("-" * 45)
-    
-    # --- DECRYPTION & VERIFICATION PHASE ---
-    
+        
     # 4. Extract the 8-character hash and the actual ciphertext
     extracted_hash = final_payload[-8:]
     actual_ciphertext = final_payload[:-8]
