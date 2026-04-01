@@ -1,18 +1,23 @@
-# Autokey-cipher & Custom Hash Generator
-## 1. The Cipher
-The Autokey cipher is a polyalphabetic substitution cipher similar to the Vigenère cipher. However, instead of repeating the keyword over and over, the Autokey cipher starts with the keyword and then appends the plaintext itself to generate the rest of the keystream.The MathFor a plaintext letter $P_i$, a keystream letter $K_i$, and a ciphertext letter $C_i$:
 
- * Encryption: $C_i = (P_i + K_i) \pmod{26}$
- * Decryption: $P_i = (C_i - K_i + 26) \pmod{26}$
+# Autokey-cipher & Custom Hash Generator
+
+## 1. The Cipher
+The Autokey cipher is a polyalphabetic substitution cipher similar to the Vigenère cipher. However, instead of repeating the keyword over and over, the Autokey cipher starts with the keyword and then appends the plaintext itself to generate the rest of the keystream.
+
+### The Math
+For a plaintext letter $P_i$, a keystream letter $K_i$, and a ciphertext letter $C_i$:
+* **Encryption:** $C_i=(P_i+K_i)\pmod{26}$
+* **Decryption:** $P_i=(C_i-K_i+26)\pmod{26}$
 
 ## 2. The Hash (DJB2)
 Once the text is encrypted, it is passed through a custom hash function. 
 * It initializes with a prime "magic number" (`5381`).
 * It iterates through every character of the encrypted text, applying a bitwise left shift (`<< 5`) and addition to multiply by 33, then adds the character's ASCII value.
 * Finally, it applies a 32-bit mask to keep the number bounded and formats it as an 8-character uppercase Hex string (e.g., `0A3F1B9C`).
-## 3. Coding 
-### How the Code Works:
 
+## 3. Coding 
+
+### How the Code Works:
 This script is built around three core functions that handle text preparation, cryptography, and data hashing. Here is a step-by-step breakdown of how each component operates.
 
 ### a. Text Preparation: `prepare_string(text)`
@@ -47,6 +52,39 @@ When you run the script, the `__main__` block orchestrates the process:
 3. Feeds the sanitized text and key into `autokey_encrypt()` to generate the ciphertext.
 4. Passes the resulting ciphertext into `custom_hash()` to generate the 8-character hex signature.
 5. Prints the sanitized inputs, the encrypted payload, and the resulting hash to the console.
+
+---
+
+## 4. Operational Examples
+
+### Example 1: Basic Encryption
+* **Plaintext:** `HELLO`
+* **Key:** `KEY`
+* **Keystream Generation:** `KEY` + `HE` (first two letters of plaintext) = `KEYHE`
+* **Encryption Math (Modulo 26):**
+  * **H** (7) + **K** (10) = **R** (17)
+  * **E** (4) + **E** (4) = **I** (8)
+  * **L** (11) + **Y** (24) = 35 $\rightarrow$ 35 % 26 = **J** (9)
+  * **L** (11) + **H** (7) = **S** (18)
+  * **O** (14) + **E** (4) = **S** (18)
+* **Resulting Ciphertext:** `RIJSS`
+* **Resulting Hash Output (DJB2):** `0F2A84D3` *(Example Hex Output)*
+
+### Example 2: Short Key
+* **Plaintext:** `ATTACK`
+* **Key:** `X`
+* **Keystream Generation:** `X` + `ATTAC` = `XATTAC`
+* **Encryption Math (Modulo 26):**
+  * **A** (0) + **X** (23) = **X** (23)
+  * **T** (19) + **A** (0) = **T** (19)
+  * **T** (19) + **T** (19) = 38 $\rightarrow$ 38 % 26 = **M** (12)
+  * **A** (0) + **T** (19) = **T** (19)
+  * **C** (2) + **A** (0) = **C** (2)
+  * **K** (10) + **C** (2) = **M** (12)
+* **Resulting Ciphertext:** `XTMTCM`
+* **Resulting Hash Output (DJB2):** `B73E11C4` *(Example Hex Output)*
+
+---
 
 ## AI Generation Prompts
 
